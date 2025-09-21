@@ -50,7 +50,11 @@ import (
 )
 
 func main() {
-    fileID, err := halome.Upload("local/file/path.txt", "your-auth-token", "https://api.halomeos.com/gateway")
+	// 上传文件
+	// 文件路径
+	// token
+	// 网关地址
+    fileID, err := halome.UploadFile("local/file/path.txt", "your-auth-token", "https://api.halomeos.com/gateway")
     if err != nil {
         fmt.Printf("上传失败: %v\n", err)
         return
