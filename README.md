@@ -68,7 +68,6 @@ func main() {
         config := halome.DownloadConfig{
         URL:        "https://example.com/file.txt", // 替换为实际的文件URL
         Timeout:    60 * time.Second,               // 超时时间
-        RetryCount: 3,                              // 重试次数
         AuthToken:  "your-auth-token-here",         // 替换为实际的授权令牌
     }
 
@@ -95,7 +94,6 @@ func main() {
         OutputPath: "./large-file.iso",                   // 本地保存路径
         ChunkSize:  5 * 1024 * 1024,                      // 5MB分片
         Timeout:    60 * time.Second,                     // 超时时间
-        RetryCount: 3,                                    // 重试次数
         AuthToken:  "your-auth-token-here",               // 替换为实际的授权令牌
     }
     

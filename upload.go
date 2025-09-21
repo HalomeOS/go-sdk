@@ -16,7 +16,7 @@ import (
 type RespUploadResp struct {
 	Code      int    `json:"code"`
 	Message   string `json:"message"`
-	FileIndex string `json:"fileIndex"`
+	FileIndex int64  `json:"fileIndex"`
 	Id        string `json:"id"`
 }
 
@@ -24,7 +24,7 @@ type RespUploadResp struct {
 // FilePath: 文件路径
 // AuthToken: 认证token
 // GatewayUrl: 网关url
-func Upload(FilePath, AuthToken, GatewayUrl string) (id string, err error) {
+func UploadFile(FilePath, AuthToken, GatewayUrl string) (id string, err error) {
 	//resp := &RespUploadResp{}
 	// 切片大小，这里设置为2MB
 	const chunkSize = 2 * 1024 * 1024
@@ -98,7 +98,7 @@ func Upload(FilePath, AuthToken, GatewayUrl string) (id string, err error) {
 		//断点续传
 		if respUploadResp.Code == 7 {
 			// 修正当前偏移量
-			offset, _ = strconv.ParseInt(respUploadResp.FileIndex, 10, 64)
+			offset = respUploadResp.FileIndex
 			FileStartIndex = strconv.FormatInt(offset, 10)
 			continue
 		}
@@ -113,7 +113,7 @@ func Upload(FilePath, AuthToken, GatewayUrl string) (id string, err error) {
 			return id, nil
 		}
 		// 计算下一个偏移量
-		offset, _ = strconv.ParseInt(respUploadResp.FileIndex, 10, 64)
+		offset = respUploadResp.FileIndex
 		FileStartIndex = strconv.FormatInt(offset, 10)
 	}
 }
@@ -143,9 +143,13 @@ func readFileBytes(file *os.File, offset int64, length int) ([]byte, error) {
 	// 从指定位置读取指定长度的字节
 	n, err := file.ReadAt(buffer, offset)
 	if err != nil {
+		// EOF是正常文件结束，不是错误
+		if err == io.EOF {
+			// 返回实际读取的字节
+			return buffer[:n], nil
+		}
 		return nil, fmt.Errorf("读取文件失败: %v", err)
 	}
-
 	// 返回实际读取的字节（可能小于请求的长度，如到达文件末尾）
 	return buffer[:n], nil
 }
